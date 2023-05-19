@@ -55,7 +55,7 @@ public class AccountController {
             isSuccess = false;
         }
 
-        if(isSuccess == true){
+        if(isSuccess){
             Customer customer = new Customer(customerDTO);
             UserDTO userDTO = new UserDTO(customerDTO);
             User user = new User(userDTO);
