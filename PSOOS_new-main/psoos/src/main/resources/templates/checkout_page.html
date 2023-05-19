@@ -53,59 +53,35 @@
   text-align: center;
   opacity: 0.6;
   }
-  .col-md-3 {
+  .col-lg-3 {
   background-color: #2F2F2F;
   float: left;
-  width: 20%;
   padding: 20px;
+  width: 200px;
   height: 600px;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
+  margin-left: 150px;
   }
 
-  .col-md-9 {
+  .col-lg-9 {
   background-color: #F4F3F3;
   float: right;
-  width: 80%;
+  width: 1015px;
   padding: 10px;
   height: 600px;
   border-top-right-radius: 10px;
   padding-top: 50px;
+  margin-right: 150px;
   }
-  .view_more-button {
-  background-color: #66AC3A;
-  color: white;
-  height: 25px;
-  width: 150px;
-  border: none;
-  border-radius: 12.5px;
-  cursor: pointer;
-  }
-  .accept-button {
-  background-color: #23BCD7;
-  color: white;
-  height: 25px;
-  width: 80px;
-  border: none;
-  border-radius: 12.5px;
-  cursor: pointer;
-  }
-  .decline-button {
-  background-color: #BD0452;
-  color: white;
-  height: 25px;
-  width: 80px;
-  border: none;
-  border-radius: 12.5px;
-  cursor: pointer;
-  }
+ .button{
+ align: center;
+ }
 </style>
-<br>
-<br>
-<br>
-<div class="container">
+<br><br><br><br><br><br>
+<div class="container-fluid text-center">
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-lg-3">
             <a th:href="@{/accountPage}">
                 <h3 class="myAccount">MY ACCOUNT</h3>
             </a>
@@ -117,65 +93,78 @@
                 <h3 class="logOut">LOG OUT </h3>
             </a>
         </div>
-        <div class="col-md-9">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">ORDER NO.</th>
-                    <th scope="col">TYPE</th>
-                    <th scope="col">ITEM</th>
-                    <th scope="col">QTY</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">597781005</th>
-                    <td>A</td>
-                    <td>SHIRT</td>
-                    <td>1</td>
-                    <td><button class="view_more-button">
-                        View More Details
-                    </button></td>
-                    <td><button class="accept-button">
-                        Accept
-                    </button></td>
-                    <td><button class="decline-button">
-                        Decline
-                    </button></td>
-                </tr>
-                <tr>
-                    <th scope="row">597781004</th>
-                    <td>B</td>
-                    <td>DOC</td>
-                    <td>1</td>
-                    <td><button class="view_more-button">
-                        View More Details
-                    </button></td>
-                    <td><button class="accept-button">
-                        Accept
-                    </button></td>
-                    <td><button class="decline-button">
-                        Decline
-                    </button></td>
-                </tr>
-                <tr>
-                    <th scope="row">597781003</th>
-                    <td>A</td>
-                    <td>SHIRT</td>
-                    <td>2</td>
-                    <td><button class="view_more-button">
-                        View More Details
-                    </button></td>
-                    <td><button class="accept-button">
-                        Accept
-                    </button></td>
-                    <td><button class="decline-button">
-                        Decline
-                    </button></td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="col-lg-9 text-center">
+            <div class = "row">
+                <div class = "col-md-4">
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Order Type</th>
+                            <th>No of Pages</th>
+                            <th>Paper Size</th>
+                            <th>Print Type</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each = "order : ${orders}">
+                            <th th:text = "${order.orderType}"></th>
+                            <th th:text = "${order.noOfPages}"></th>
+                            <th th:text = "${order.paperSize}"></th>
+                            <th th:text = "${order.printType}"></th>
+                            <th>PENDING</th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class = "col-md-4">
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Order Type</th>
+                            <th>MugColor</th>
+                            <th>No. of Mugs</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each = "order : ${mugOrders}">
+                            <th th:text = "${order.orderType}"></th>
+                            <th th:text = "${order.mugColor}"></th>
+                            <th th:text = "${order.noOfMug}"></th>
+                            <th>PENDING</th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class = "col-md-4">
+
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Order Type</th>
+                            <th>Shirt Size</th>
+                            <th>Print Type</th>
+                            <th>No. of Shirts</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each = "order : ${shirtOrders}">
+                            <th th:text = "${order.orderType}"></th>
+                            <th th:text = "${order.shirtSize}"></th>
+                            <th th:text = "${order.printType}"></th>
+                            <th th:text = "${order.noOfShirt}"></th>
+                            <th>PENDING</th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <a th:href="@{/orderType}" class = "button button-primary">ADD ORDER</a>
         </div>
+    </div>
+</div>
     </div>
 </div>
 </body>
