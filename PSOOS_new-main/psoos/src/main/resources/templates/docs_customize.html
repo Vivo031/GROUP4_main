@@ -136,49 +136,107 @@ confirm("Do you wish to proceed?");
         </div>
 
         <div class = "col-lg-6">
-            <form class = "form" action="" th:action = "@{/addDocument}" method = "post">
-            <h1>DOCUMENT</h1>
-            <div class="mb-3">
-                <input class="form-control" type="file" id="formFile">
-            </div>
-            <br>
-            <div class = "row">
-                <div class = "col-lg-6">
+            <form class = "form " action="" th:action = "@{/addDocument}" method = "post" enctype="multipart/form-data">
+                <h1>DOCUMENT</h1>
+                <div class="mb-3">
+                    <!--          <label for="formFile" class="form-label">Default file input example</label>-->
+                    <input class="form-control" type="file" id="formFile" th:name = "file">
+                </div>
+                <br>
+                <div class = "row">
+                    <div class = "row">
+                        <div class = "col-md-6">
+                            <h5><b>Customized</b></h5>
+                        </div>
+                        <div class = "col-md-6">
+                            <select  class="form-control" id = "customize" th:name = "printType" onchange="customized()">
+                                <option value = "1">Colored, 10 pcs</option>
+                                <option value = "2">Black, 10 pcs</option>
+                                <option value = "0">None</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class = "row">
+                        <div class = "col-md-6">
+                            <br>
+                            <h5><b>Paper Size</b></h5>
+                        </div>
+                        <div class = "col-md-6">
+                            <select  class="form-control" id="" th:name = "paperSize">
+                                <option>A4</option>
+                                <option>Legal</option>
+                                <option>Letter</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class = "col-md-6">
+                        <h5><b>Print Type</b></h5>
+                    </div>
+                    <div class = "col-md-6">
+                        <select  class="form-control" id = "type" th:name = "printType" onchange="calculate()">
+                            <option>Colored</option>
+                            <option>Black</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class = "row">
                     <br>
-                    <h5><b>Paper Size</b></h5>
+                    <div class = "col-md-6">
+                        <h5><b>No. of pages</b></h5>
+                    </div>
+                    <div class = "col-md-6">
+                        <input type = "number" id = "pages" th:name = "noOfPages" value = "1" onchange="calculate()">
+                    </div>
                 </div>
-                <div class = "col-lg-6">
-                    <select  class="form-control" id="" th:name = "paperSize">
-                        <option>A4</option>
-                        <option>Legal</option>
-                        <option>Letter</option>
-                        <option>Custom</option>
-                    </select>
+
+                <div class = "row">
+                    <br>
+                    <div class = "col-md-6">
+                        <h5><b>Total Price</b></h5>
+                    </div>
+                    <div class = "col-md-6">
+                        <input type = "number" id = "price" th:name = "price" readonly>
+                    </div>
                 </div>
-            </div>
-            <div class = "row">
-                <div class = "col-lg-6">
-                    <h5><b>Print Type</b></h5>
-                </div>
-                <div class = "col-lg-6">
-                    <select  class="form-control" th:name = "printType">
-                        <option>Colored</option>
-                        <option>Black</option>
-                    </select>
-                </div>
-            </div>
-            <div class = "row">
-            <div class = "col-lg-6">
-                <h5><b>No. of pages</b></h5>
-            </div>
-            <div class = "col-sm-3">
-                <input type = "number" th:name = "noOfPages">
-            </div>
-                <br>
-                <br>
-                <br>
-            </div>
-        <input type = "submit" placeholder = "Submit Order" class = "btn btn-primary" />
+
+                <script type="text/javascript">
+          function calculate(){
+            var pages = document.getElementById('pages').value;
+            var type = 0;
+            if(document.getElementById('type').value === "Colored"){
+                type = 7;
+              }else{
+                type = 2;
+            }
+
+            var price = pages * type;
+            console.log(price);
+            document.getElementById('price').value = price;
+            console.log(price);
+          }
+
+          function customized(){
+                if(document.getElementById('customize').value === "1"){
+                  document.getElementById('pages').value = 10;
+                  document.getElementById('type').value = "Colored";
+                  calculate();
+                }else if(document.getElementById('customize').value === "2"){
+                  document.getElementById('pages').value = 10;
+                  document.getElementById('type').value = "Black";
+                  calculate();
+                }else{
+                  document.getElementById('pages').value = 0;
+                  document.getElementById('type').value = "Black";
+                  document.getElementById('price').value = 0;
+                }
+
+              }
+          </script>
+
+                <input type = "submit" placeholder = "Submit Order" class = "btn btn-primary" />
             </form>
         </div>
 

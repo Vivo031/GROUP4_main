@@ -36,14 +36,4 @@ public class Customer {
         this.customerName = customerDTO.getCustomerName();
     }
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", customerName='" + customerName + '\'' +
-                ", customerEmail='" + customerEmail + '\'' +
-                ", customerAddress='" + customerAddress + '\'' +
-                ", customerPhoneNumber='" + customerPhoneNumber + '\'' +
-                '}';
-    }
 }

@@ -1,12 +1,15 @@
-package com.main.psoos.service;
+package com.main.psoos.service.impl;
 
 import com.main.psoos.model.User;
 import com.main.psoos.repository.UsersRepository;
+import com.main.psoos.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     UsersRepository usersRepository;
@@ -29,7 +32,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User updateUser(User user) {
-        return usersRepository.save(user);
+    public List<User> getAllActiveUsers() {
+        return usersRepository.findByIsDeletedFalse();
     }
 }

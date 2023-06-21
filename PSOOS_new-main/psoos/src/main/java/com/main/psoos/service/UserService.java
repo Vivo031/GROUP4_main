@@ -2,6 +2,8 @@ package com.main.psoos.service;
 
 import com.main.psoos.model.User;
 
+import java.util.List;
+
 public interface UserService {
     User createUser (User user);
 
@@ -9,5 +11,5 @@ public interface UserService {
 
     User getUserByName(String name);
 
-    User updateUser(User user);
+    List<User> getAllActiveUsers();
 }

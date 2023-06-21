@@ -15,7 +15,6 @@ public class CustomerDTO {
     private String customerHomeAddress;
     private String customerPhoneNumber;
     private String password;
-    private String customerOldName;
 
     public CustomerDTO(Customer customer) {
         this.customerName = customer.getCustomerName();

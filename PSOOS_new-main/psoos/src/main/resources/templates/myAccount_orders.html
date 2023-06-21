@@ -226,15 +226,18 @@ function closeNav() {
                 <tr>
                     <th>Order ID</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>barcode</th>
                 </tr>
                 </thead>
                 <tbody>
-
-
+                <tr th:each = "order : ${orders}">
+                    <th th:text = "${order.joId}"></th>
+                    <th>PENDING</th>
+                    <th><a th:href = "@{'/barcode/download/' + ${order.joId}}" class = "btn btn-primary">Download Barcode</a></th>
+                </tr>
                 </tbody>
             </table>
-            <a th:href="@{/orderType}" class = "button button-primary">ADD ORDER</a>
+            <a th:href="@{/homePage}" class = "button button-primary">ADD ORDER</a>
         </div>
     </div>
 </div>
