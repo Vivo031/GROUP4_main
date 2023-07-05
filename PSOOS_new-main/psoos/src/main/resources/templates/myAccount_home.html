@@ -203,14 +203,12 @@ function closeNav() {
 <br>
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a th:href="@{/accountPage}">
-        <h3 class="myAccount">MY ACCOUNT</h3>
-    </a>
+    <a href="#home"><span class="fa fa-home solo">MY ACCOUNT</span></a>
     <a th:href="@{/myOrdersPage}">
         <h3 class="myOrders">MY ORDERS </h3>
     </a>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <a th:href="@{/loginPage}">
+    <a th:href="@{'/logout'}">
         <h3 class="logOut">LOG OUT </h3>
     </a>
 </div>

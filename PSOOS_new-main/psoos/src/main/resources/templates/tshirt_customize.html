@@ -33,14 +33,7 @@
         display:block !important;
   }
 
-  .form{
-   position: absolute;
-   border-top: 2px solid #D768C3;
-   border-left: 2px solid #D768C3;
-   border-bottom: 2px solid #28B6CF;
-   border-right: 2px solid #28B6CF;
-   padding-bottom: 5px;
-  }
+
 
    body{
     background-image: url("img/background.jpg");
@@ -71,12 +64,15 @@ border-top: 2px solid #D768C3;
 .btn.active span.glyphicon {
 	opacity: 1;
 }
+.border-highlight {
+    border:5px dashed red;
+}
 </style>
 <body>
 <nav class="navbar">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#"><img src = "../img/logo1.jpg" width="100px" height="100px"></a>
+      <a class="navbar-brand" href="#"><img src = "/../img/logo.jpg" width="150px" height="150px"></a>
     </div>
     <ul class="nav navbar-nav navbar-right">
       <li><a th:href="@{/loginPage}"><b>Home</b></a></li>
@@ -85,15 +81,24 @@ border-top: 2px solid #D768C3;
     </ul>
   </div>
 </nav>
-<br><br><br>
+<br>
+<br>
+<br>
 <div class = "logInDiv text-center container-fluid">
   <form class = "form " action="" th:action = "@{/addShirt}" method = "post" enctype="multipart/form-data">
     <div class = "row">
       <div class = "col-md-6">
-        <img src="/img/tshirt1.jpg" alt="Lights" style="width:75%">
+        <img src="/img/shirt.png" alt="Lights" style="width:75%">
       </div>
       <div class = "col-md-6">
         <h1>T-SHIRT</h1>
+        Customize
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <select  class="form-control btn btn-outline-primary" id = "customizeOption" onchange="toggleCustomize(this)">
+            <option value = "yes">YES</option>
+            <option value = "no">NO</option>
+          </select>
+        </div>
         <div class="mb-3">
           <!--        <input class="form-control" type="file" id="formFile" th:name = "file" >-->
         </div>
@@ -103,7 +108,7 @@ border-top: 2px solid #D768C3;
             <h5><b>Customized</b></h5>
           </div>
           <div class = "col-md-6">
-            <select  class="form-control" id = "customize" th:name = "printType" onchange="customized()">
+            <select  class="form-control"  id = "customize" onchange="customized()">
               <option value = "1">Rubberized, 10 pcs</option>
               <option value = "2">DTF, 10 pcs</option>
               <option value = "0">None</option>
@@ -117,7 +122,7 @@ border-top: 2px solid #D768C3;
             <h5><b>Sizes</b></h5>
           </div>
           <div class = "col-md-6">
-            <select  class="form-control"  th:name = "shirtSize">
+            <select  class="form-control" id = "sizes" th:name = "shirtSize">
               <option>Extra Small</option>
               <option>Small</option>
               <option>Medium</option>
@@ -133,7 +138,7 @@ border-top: 2px solid #D768C3;
           <div class = "col-md-6">
             <select  class="form-control"  id = "type" th:name = "printType" onchange="calculate()">
               <option value = "Rubberized">Rubberized</option>
-              <option value = "DTF" >DTF</option>
+              <option value = "DTF">DTF</option>
 
             </select>
           </div>
@@ -148,7 +153,15 @@ border-top: 2px solid #D768C3;
             <input type = "number" id = "noOfShirt" th:name = "noOfShirt" onchange="calculate()">
           </div>
         </div>
-
+        <div class = "row">
+          <br>
+          <div class = "col-md-6">
+            <h5><b>Notes</b></h5>
+          </div>
+          <div class = "col-md-6">
+            <textarea id = "shirtNotes" th:name = "shirtNotes" placeholder = "Add Notes here"></textarea>
+          </div>
+        </div>
         <div class = "row">
           <br>
           <div class = "col-md-6">
@@ -176,18 +189,13 @@ border-top: 2px solid #D768C3;
                   </div>
                   <div class="modal-body">
                     <div id="thumbs">
-                      <!-- Dynamically created thumbnails start -->
-                      <img id="pic-1" width = "200px" height = "200px" src="...\img\T-Shirt Designs\T-shirt Designs - 1.png">
-                      <img id="pic-2" width = "200px" height = "200px" src="...\img\T-Shirt Designs\T-shirt Designs - 2.png">
-                      <img id="pic-3" width = "200px" height = "200px" src="...\img\T-Shirt Designs\T-shirt Designs - 3.png">
-                      <img id="pic-4" width = "200px" height = "200px" src="...\img\T-Shirt Designs\T-shirt Designs - 4.png">
-                      <img id="pic-5" width = "200px" height = "200px" src="...\img\T-Shirt Designs\T-shirt Designs - 5.png">
-                      <img id="pic-6" width = "200px" height = "200px" src="...\img\T-Shirt Designs\T-shirt Designs - 6.png">
-                      <!--                    <img id="pic-2" width = "50px" height = "50px"  src="http://lorempixum.com/200/200/animals/2/animal2.jpg">-->
-                      <!--                    <img id="pic-3" width = "50px" height = "50px"  src="http://lorempixum.com/200/200/animals/2/animal2.jpg">-->
-                      <!--                    <img id="pic-4" width = "50px" height = "50px"  src="http://lorempixum.com/200/200/animals/2/animal2.jpg">-->
-                      <!--                    <img id="pic-5" src="http://lorempixum.com/200/200/animals/3/animal3DOTjpg">-->
-                      <!-- Dynamically created thumbnails end -->
+                      <div class = "row">
+                        <div  th:each = "design : ${designs}">
+                          <div class = "col-md-4">
+                            <img th:src = "${design.path}"  height = "100px" width = "100px" src=""/>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -200,19 +208,14 @@ border-top: 2px solid #D768C3;
 
             <script>
             $('#thumbs').delegate('img', 'click', function() {
-                var $this = $(this);
-                // Clear formatting
-                $('#thumbs img').removeClass('border-highlight');
+                    var $this = $(this);
 
-                // Highlight with coloured border
-                $this.addClass('border-highlight');
+                    $('#thumbs img').removeClass('border-highlight');
+                    $this.addClass('border-highlight');
 
-                // Changes the value of the form field "animal" to the file name shown in the image.
-                $('[name="animal"]').val( $this.attr('id').substring(0)
-                                        );
-                //alert('You picked ' + $('[name="animal"]').val() );
-            });
+                   $('[name="customizationType"]').val( $this.prop('src'));
 
+                });
           </script>
           </div>
 
@@ -247,14 +250,37 @@ border-top: 2px solid #D768C3;
                   document.getElementById('type').value = "Rubberized";
                   document.getElementById('price').value = 0;
                 }
+              }
+
+              function toggleCustomize(selectField){
+                var value = selectField.value;
+                if(value === "yes"){
+                  document.getElementById('type').disabled = false;
+                  document.getElementById('customize').disabled = false;
+                  document.getElementById('noOfShirt').disabled = false;
+                  document.getElementById('type').disabled = false;
+                  }
+                if(value === "no"){
+                  document.getElementById('type').disabled = "true";
+                  document.getElementById('customize').disabled = "true";
+                  document.getElementById('noOfShirt').disabled = "true";
+                  document.getElementById('type').disabled = "true";
+                  document.getElementById('sizes').disabled = "true";
+                  document.getElementById('type').value = "Rubberized";
+                  document.getElementById('noOfShirt').value = 1;
+                  calculate();
+                }
+                console.log(value);
 
               }
+
         </script>
 
       </div>
       <input type = "submit" placeholder = "Submit Order" class = "btn btn-primary" />
     </div>
   </form>
-  </div>
+
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>

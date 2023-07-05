@@ -25,6 +25,8 @@ public class MugDTO {
     String fileName;
     private String fileType;
     Integer price;
+    String customizationType;
+    String mugNotes;
 
     public MugDTO(Mug mug){
         this.mugColor = mug.getMugColor();
@@ -32,5 +34,6 @@ public class MugDTO {
         this.noOfMug = mug.getNoOfMug();
         this.fileType = mug.getFileType();
         this.price = mug.getPrice();
+        this.mugNotes = mug.getMugNotes();
     }
 }

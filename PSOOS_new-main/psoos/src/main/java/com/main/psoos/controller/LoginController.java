@@ -2,27 +2,18 @@ package com.main.psoos.controller;
 
 import com.main.psoos.dto.*;
 import com.main.psoos.model.Customer;
-import com.main.psoos.model.Document;
 import com.main.psoos.model.MugDesign;
 import com.main.psoos.model.Order;
 import com.main.psoos.model.ShirtDesign;
 import com.main.psoos.model.User;
-import com.main.psoos.service.CustomMultipartFile;
-import com.main.psoos.service.CustomerService;
-import com.main.psoos.service.DocumentService;
-import com.main.psoos.service.MugDesignService;
-import com.main.psoos.service.MugService;
-import com.main.psoos.service.OrderService;
-import com.main.psoos.service.ShirtDesignService;
-import com.main.psoos.service.ShirtService;
-import com.main.psoos.service.UserService;
-import org.apache.tomcat.util.http.fileupload.FileItem;
+import com.main.psoos.service.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,10 +36,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @Controller
@@ -77,6 +69,9 @@ public class LoginController {
     @Autowired
     MugDesignService mugDesignService;
 
+    @Autowired
+    ReportsService reportsService;
+
     List<DocumentDTO> documentOrders = new ArrayList<>();
     List<MugDTO> mugOrders = new ArrayList<>();
     List<ShirtDTO> shirtOrders = new ArrayList<>();
@@ -102,6 +97,7 @@ public class LoginController {
         model.addAttribute("password", user.getPassword());
         return "myAccount_home";
     }
+
 
     @GetMapping("/adminPage")
     public String adminPage(Model model, User user){
@@ -129,10 +125,12 @@ public class LoginController {
                         || tempUser.getName().equals("Worker 3"))
                 .map(User::getName)
                 .toList();
+        model.addAttribute("role", user.getRole());
         model.addAttribute("workers", workers);
 
         return "Admin_Home";
     }
+
     @GetMapping("adminManageAccounts")
     public String getAdminManageAccounts(Model model, User user){
         Customer customer = customerService.getCustomerByName(user.getName());
@@ -192,22 +190,28 @@ public class LoginController {
     }
 
     @GetMapping("/adminPendingOrdersPage")
-    public String adminPendingOrdersPage(Model model, User user){
-        Customer customer = customerService.getCustomerByName(user.getName());
-        model.addAttribute("name", user.getName());
-        model.addAttribute("customer", customer);
-        orders.clear();
-        orderService.getAllOrders().
-                stream().
-                filter(order -> order.getStatus().equals("PENDING") || order.getStatus().equals("ACCEPTED")).
-                forEach(tempOrder -> {
-                    OrderDTO orderDTO = new OrderDTO(tempOrder);
-                    orderDTO.setMugDTOS(mugService.getMugDTOByJoId(orderDTO.getJoId()));
-                    orderDTO.setDocumentDTOS(documentService.getDocumentDTOByJoId(orderDTO.getJoId()));
-                    orderDTO.setShirtDTOS(shirtService.getShirtDTOByJoId(orderDTO.getJoId()));
-                    orders.add(orderDTO);
-                });
-        model.addAttribute("orders", orders);
+        public String adminPendingOrdersPage(Model model, User user){
+            Customer customer = customerService.getCustomerByName(user.getName());
+            model.addAttribute("name", user.getName());
+            model.addAttribute("customer", customer);
+            orders.clear();
+            orderService.getAllOrders().
+                    stream().
+                    filter(order -> order.getStatus().equals("PENDING") || order.getStatus().equals("ACCEPTED") && order.getWorker().equals(loggedUser.getName())).
+                    forEach(tempOrder -> {
+                        OrderDTO orderDTO = new OrderDTO(tempOrder);
+                        orderDTO.setMugDTOS(mugService.getMugDTOByJoId(orderDTO.getJoId()));
+                        orderDTO.setDocumentDTOS(documentService.getDocumentDTOByJoId(orderDTO.getJoId()));
+                        orderDTO.setShirtDTOS(shirtService.getShirtDTOByJoId(orderDTO.getJoId()));
+                        orderDTO.setWorkerNotes(tempOrder.getWorkerNotes());
+                       String status = "ACCEPTED";
+                       if (tempOrder.getOrderStatus() != null){
+                           status = tempOrder.getOrderStatus();
+                        }
+                        orderDTO.setStatus(status);
+                        orders.add(orderDTO);
+                    });
+            model.addAttribute("orders", orders);
 
         return "Admin_Pending";
     }
@@ -265,7 +269,14 @@ public class LoginController {
                 this.model.putAll(model.asMap());
 
                 return adminPage(model, tempUser);
-            case "USER_CLIENT" :
+            case "USER_WORKER":
+                loggedUser = tempUser;
+                loggedCustomer = customerService.getCustomerByName(tempUser.getName());
+                this.model.putAll(model.asMap());
+
+                return adminPendingOrdersPage(model, tempUser);
+
+            case "USER_CLIENT"  :
                 isSuccess = true;
                 loggedUser = tempUser;
                 loggedCustomer = customerService.getCustomerByName(tempUser.getName());
@@ -309,6 +320,32 @@ public class LoginController {
         model.addAttribute("isSuccess",isSuccess);
         return "createAccount";
     }
+    @PostMapping({"/createAccountAdmin"})
+    public String createAccountAdmin(CustomerDTO customerDTO, Model model) {
+        System.out.println(customerDTO.getCustomerEmail() + customerDTO.getCustomerName());
+
+        boolean isSuccess = true;
+        if(customerDTO.getCustomerName().equals("")){
+            model.addAttribute("nameBlank",true);
+            isSuccess = false;
+        }
+        if(customerDTO.getCustomerName().equals("")){
+            model.addAttribute("nameBlank",true);
+            isSuccess = false;
+        }
+
+        if(isSuccess){
+            Customer customer = new Customer(customerDTO);
+            UserDTO userDTO = new UserDTO(customerDTO);
+            User user = new User(userDTO);
+            user.setRole("USER_CLIENT");
+            userService.createUser(user);
+            customerService.createCustomer(customer);
+        }
+
+        model.addAttribute("isSuccess",isSuccess);
+        return adminPage(model, loggedUser);
+    }
 
     @PostMapping("/updateAccount")
     public String updateAccount(CustomerDTO customerDTO, Model model){
@@ -327,6 +364,25 @@ public class LoginController {
         model.addAttribute("customer", tempCustomer);
 
         return "myAccount_home";
+    }
+    @PostMapping("/updateAccountAdmin")
+    public String updateAccountAdmin(CustomerDTO customerDTO, Model model){
+        Customer tempCustomer = customerService.getCustomerByName(customerDTO.getCustomerName());
+        System.out.println(customerDTO.getCustomerPhoneNumber());
+        tempCustomer.setCustomerPhoneNumber(customerDTO.getCustomerPhoneNumber());
+        tempCustomer.setCustomerName(customerDTO.getCustomerName());
+        tempCustomer.setCustomerEmail(customerDTO.getCustomerEmail());
+        tempCustomer.setCustomerAddress(customerDTO.getCustomerHomeAddress());
+        User tempUser = userService.getUserByName(tempCustomer.getCustomerName());
+
+        //Updating of User and Customer Credentials
+        userService.createUser(tempUser);
+        customerService.updateCustomerDetails(tempCustomer);
+        User user = userService.getUserByName(tempCustomer.getCustomerName());
+        model.addAttribute("password", user.getPassword());
+        model.addAttribute("customer", tempCustomer);
+
+        return adminPage(model, loggedUser);
     }
 
     @GetMapping("/myOrdersPage")
@@ -358,7 +414,8 @@ public class LoginController {
     }
 
     @GetMapping("/uploadMug")
-    public String uploadMugPage(){
+    public String uploadMugPage(Model model){
+        model.addAttribute("designs", getAllMugDesigns());
         return "mug_customize";
     }
 
@@ -373,7 +430,9 @@ public class LoginController {
     }
 
     @GetMapping("/uploadShirt")
-    public String uploadShirtPage(){
+    public String uploadShirtPage(Model model){
+        model.addAttribute("designs", getAllShirtDesigns());
+
         return "tshirt_customize";
     }
 
@@ -465,7 +524,9 @@ public class LoginController {
         byte[] byteImage = baos.toByteArray();
         orderDTO.setBarcode(byteImage);
 
-        orderService.saveOrders(new Order(orderDTO));
+        Order orderToSave = new Order(orderDTO);
+        orderToSave.setFinishDate("");
+        orderService.saveOrders(orderToSave);
 
         List<Order> customerOrders = new ArrayList<>();
         customerOrders = orderService.getOrdersById(loggedCustomer.getCustomerId());
@@ -499,30 +560,40 @@ public class LoginController {
     public void addMugOrder(MugDTO mugDTO) throws IOException {
         mugDTO.setOrderType("MUG");
 
-        String uploadDir = "C:\\Users\\alyssa\\Downloads\\" + loggedUser.getUserId();
-        String fileName = StringUtils.cleanPath(mugDTO.getFile().getOriginalFilename());
-        Path uploadPath = Paths.get(uploadDir);
-        if(!Files.exists(uploadPath)){
-            Files.createDirectory(uploadPath);
-        }
-        try{
-            File file = new File(uploadDir +"\\" +fileName);
-            String mimeType = Files.probeContentType(uploadPath);
-            DiskFileItem fileItem = new DiskFileItem(fileName, mimeType, false, file.getName(), (int) file.length(), file.getParentFile());
+        if(mugDTO.getFile() == null){
+            String customizedDesignName = mugDTO.getCustomizationType().replace("http://localhost:8081/","").replace("%20"," ");
+            File file = new File(MUG_DESIGN_PATH + customizedDesignName);
+            Path downloadPath = Paths.get(MUG_DESIGN_PATH);
+            String mimeType = Files.probeContentType(downloadPath);
+            Path filePath = downloadPath.resolve(customizedDesignName);
+            DiskFileItem fileItem = new DiskFileItem(customizedDesignName, mimeType, false, file.getName(), (int) file.length(), file.getParentFile());
             fileItem.getOutputStream();
-
-            mugDTO.setFileToUpload(file);
-            InputStream inputStream = mugDTO.getFile().getInputStream();
-            Path filePath = uploadPath.resolve(fileName);
             CustomMultipartFile customMultipartFile = new CustomMultipartFile(filePath);
             mugDTO.setFile(customMultipartFile);
-            Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            mugOrders.add(mugDTO);
-        }catch(IOException e ){
-            throw new IOException("ERROR IS: " + e.getMessage() + e.getLocalizedMessage() );
+        }else{
+            try{
+                String uploadDir = "C:\\Users\\alyssa\\Downloads\\" + loggedUser.getUserId();
+                String fileName = StringUtils.cleanPath(mugDTO.getFile().getOriginalFilename());
+                Path uploadPath = Paths.get(uploadDir);
+                if(!Files.exists(uploadPath)){
+                    Files.createDirectory(uploadPath);
+                }
+                File file = new File(uploadDir +"\\" +fileName);
+                String mimeType = Files.probeContentType(uploadPath);
+                DiskFileItem fileItem = new DiskFileItem(fileName, mimeType, false, file.getName(), (int) file.length(), file.getParentFile());
+                fileItem.getOutputStream();
+                mugDTO.setFileToUpload(file);
+                InputStream inputStream = mugDTO.getFile().getInputStream();
+                Path filePath = uploadPath.resolve(fileName);
+                CustomMultipartFile customMultipartFile = new CustomMultipartFile(filePath);
+                mugDTO.setFile(customMultipartFile);
+                Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            }catch(IOException e ){
+                throw new IOException("ERROR IS: " + e.getMessage() + e.getLocalizedMessage() );
+            }
         }
-
-
+        mugOrders.add(mugDTO);
 
     }
     public void addDocumentOrder(DocumentDTO tempDocument) throws IOException {
@@ -559,7 +630,7 @@ public class LoginController {
     @GetMapping("/saveShirtDesigns")
     public String saveDocumentDesign() throws IOException {
 
-        String uploadDir = "C:\\Users\\Axel\\Downloads\\T-Shirt Designs\\" ;
+        String uploadDir = "C:\\Users\\alyssa\\Downloads\\T-Shirt Designs\\" ;
         String fileName = "T-shirt Designs - ";
         Path uploadPath = Paths.get(uploadDir);
 
@@ -585,7 +656,7 @@ public class LoginController {
     @GetMapping("/saveMugDesigns")
     public String saveMugDesign() throws IOException {
 
-        String uploadDir = "C:\\Users\\Axel\\Downloads\\Mugs Designs\\" ;
+        String uploadDir = "C:\\Users\\alyssa\\Downloads\\Mugs Designs\\" ;
         String fileName = "Mug Designs - ";
         Path uploadPath = Paths.get(uploadDir);
 
@@ -611,28 +682,39 @@ public class LoginController {
     public void addShirtOrder(ShirtDTO tempShirt) throws IOException {
         tempShirt.setOrderType("SHIRT");
 
-        String uploadDir = "C:\\Users\\alyssa\\Downloads\\" + loggedUser.getUserId();
-        String fileName = StringUtils.cleanPath(tempShirt.getFile().getOriginalFilename());
-        Path uploadPath = Paths.get(uploadDir);
-        if(!Files.exists(uploadPath)){
-            Files.createDirectory(uploadPath);
-        }
-        try{
-            File file = new File(uploadDir +"\\" +fileName);
-            String mimeType = Files.probeContentType(uploadPath);
-            DiskFileItem fileItem = new DiskFileItem(fileName, mimeType, false, file.getName(), (int) file.length(), file.getParentFile());
+        if(tempShirt.getFile() == null){
+            String customizedDesignName = tempShirt.getCustomizationType().replace("http://localhost:8080/","").replace("%20"," ");
+            File file = new File(SHIRT_DESIGN_PATH + customizedDesignName);
+            Path downloadPath = Paths.get(SHIRT_DESIGN_PATH);
+            String mimeType = Files.probeContentType(downloadPath);
+            Path filePath = downloadPath.resolve(customizedDesignName);
+            DiskFileItem fileItem = new DiskFileItem(customizedDesignName, mimeType, false, file.getName(), (int) file.length(), file.getParentFile());
             fileItem.getOutputStream();
-            tempShirt.setFileToUpload(file);
-            InputStream inputStream = tempShirt.getFile().getInputStream();
-            Path filePath = uploadPath.resolve(fileName);
             CustomMultipartFile customMultipartFile = new CustomMultipartFile(filePath);
             tempShirt.setFile(customMultipartFile);
-            Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }else{
+            try{
+                String uploadDir = "C:\\Users\\alyssa\\Downloads\\" + loggedUser.getUserId();
+                String fileName = StringUtils.cleanPath(tempShirt.getFile().getOriginalFilename());
+                Path uploadPath = Paths.get(uploadDir);
+                if(!Files.exists(uploadPath)){
+                    Files.createDirectory(uploadPath);
+                }
+                File file = new File(uploadDir +"\\" +fileName);
+                String mimeType = Files.probeContentType(uploadPath);
+                DiskFileItem fileItem = new DiskFileItem(fileName, mimeType, false, file.getName(), (int) file.length(), file.getParentFile());
+                fileItem.getOutputStream();
+                tempShirt.setFileToUpload(file);
+                InputStream inputStream = tempShirt.getFile().getInputStream();
+                Path filePath = uploadPath.resolve(fileName);
+                CustomMultipartFile customMultipartFile = new CustomMultipartFile(filePath);
+                tempShirt.setFile(customMultipartFile);
+                Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        }catch(IOException e ){
-            throw new IOException("ERROR IS: " + e.getMessage() + e.getLocalizedMessage() );
+            }catch(IOException e ){
+                throw new IOException("ERROR IS: " + e.getMessage() + e.getLocalizedMessage() );
+            }
         }
-
         shirtOrders.add(tempShirt);
     }
 
@@ -643,7 +725,7 @@ public class LoginController {
 
     @GetMapping("/pickOwnCustomizations")
     public String pickOwnCustomizationsPage(){
-        return "WhatWouldLikeToHelp";
+        return "WhatWouldYouLikeToCustomizeOwnDesign";
     }
 
     @GetMapping("/order/{status}/{jobId}")
@@ -655,6 +737,48 @@ public class LoginController {
 
         return adminPage(model, loggedUser);
     }
+    @GetMapping("/order/{status}/{jobId}/{worker}")
+    public String updateJobOrderStatusToOngoing(@PathVariable("status") String status, @PathVariable("jobId") String jobId,
+                                                @PathVariable("worker") String worker, Model model){
+
+        Order order = orderService.findByJobId(jobId);
+        order.setWorker(worker);
+        order.setStatus(status);
+        orderService.saveOrders(order);
+
+        return adminPage(model, loggedUser);
+    }
+    @PostMapping("/order/{jobId}")
+    public String updateJobOrderStatus(OrderDTO orderDTO, Model model){
+        Order order = orderService.findByJobId(orderDTO.getJoId());
+        if(orderDTO.getOrderStatus().equals("COMPLETED")){
+            order.setStatus(orderDTO.getOrderStatus());
+        }
+        order.setOrderStatus(orderDTO.getOrderStatus());
+        order.setWorkerNotes(orderDTO.getWorkerNotes());
+        orderService.saveOrders(order);
+
+        return adminPendingOrdersPage(model, loggedUser);
+    }
+
+    @PostMapping("/order/{jobId}/{worker}")
+    public String updatedOrderWorkerV2(OrderWorkerDTO orderWorkerDTO, @PathVariable("jobId") String jobId, Model model) throws ParseException {
+
+        Order order = orderService.findByJobId(jobId);
+        SimpleDateFormat format = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+                Locale.ENGLISH);
+        String outputDateFormat = "yyyy-MM-dd";
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern(outputDateFormat);
+        Date formattedDate = format.parse(orderWorkerDTO.getDateToFinish().toString());
+
+        order.setWorker(orderWorkerDTO.getWorker());
+        order.setStatus("ACCEPTED");
+        order.setFinishDate(formattedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(outputFormat));
+        orderService.saveOrders(order);
+
+        return adminPage(model, loggedUser);
+    }
+
     @GetMapping("/user/delete/{name}")
     public String deleteUser(@PathVariable("name") String name, Model model){
         User user = userService.getUserByName(name);
@@ -733,12 +857,17 @@ public class LoginController {
                 .body(content);
     }
 
-    public void logout(){
+    @GetMapping("/logout")
+    public String logout(Model model){
         loggedUser = null;
         loggedCustomer = null;
-        mugOrders = null;
-        shirtOrders = null;
-        documentOrders = null;
+        mugOrders = new ArrayList<>();
+        shirtOrders =  new ArrayList<>();
+        documentOrders =  new ArrayList<>();
+        orders = new ArrayList<>();
+        this.model = new HashMap<>();
+        model.addAttribute("logoutMessage","User has successfully logout" );
+        return loginPage(model);
     }
 
     @GetMapping("adminUploadShirtDesign")
@@ -773,20 +902,19 @@ public class LoginController {
             fileItem.getOutputStream();
             CustomMultipartFile customMultipartFile = new CustomMultipartFile(filePath);
             String path = SHIRT_DESIGN_PATH+ design.getName().replaceAll(" ", "%20");
-            design.setPath("http://localhost:8081/" + design.getName());
+            design.setPath("http://localhost:8080/" + design.getName());
             design.setName(design.getName());
 
         });
+
         return shirtDesigns;
     }
-
 
     List<MugDesignDTO> getAllMugDesigns(){
         List<MugDesignDTO> shirtDesigns = mugDesignService.getAllMugDesigns().
                 stream().map(MugDesignDTO::new).toList();
 
         shirtDesigns.forEach(design -> {
-
             String customizedDesignName = design.getName();
             File file = new File(MUG_DESIGN_PATH + customizedDesignName);
             Path downloadPath = Paths.get(MUG_DESIGN_PATH);
@@ -804,6 +932,9 @@ public class LoginController {
             design.setPath("http://localhost:8081/" + design.getName());
             design.setName(design.getName());
 
+        });
+        shirtDesigns.forEach(design -> {
+            System.out.println(design.getName());
         });
         return shirtDesigns;
     }
@@ -875,5 +1006,23 @@ public class LoginController {
 
         return adminUploadShirtDesign(model);
     }
+    @PostMapping("export-csv")
+    public void exportCSV(ReportsDTO reportsDTO, HttpServletResponse response) throws IOException {
+        List<Order> retrievedOrders = orderService.
+                getAllOrdersByDate(reportsDTO.getDateFrom(), reportsDTO.getDateTo());
+        switch(reportsDTO.getImportType()){
+            case "CSV":
+                response.setContentType("text/csv");
+                response.setHeader("Content-Disposition", "attachment; filename=\"orders" + ".csv\"");
+                reportsService.printOrders(retrievedOrders,response.getWriter());
+                break;
+            case "PDF":
+                response.setContentType("text/pdf");
+                response.setHeader("Content-Disposition", "attachment; filename=\"orders" + ".pdf\"");
+                reportsService.printOrdersPdf(retrievedOrders,response);
+                break;
+        }
 }
+}
+
 

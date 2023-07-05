@@ -221,9 +221,9 @@ border-top: 2px solid #D768C3;
             <!--      <li><a href="#">Page 2</a></li>-->
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="index.html"><b>Home</b></a></li>
+            <li><a th:href="@{/loginPage}"><b>Home</b></a></li>
             <li><a href="#"><b>About</b></a></li>
-            <li><a href="createAccount.html" class = "accountLink"><b>My Account</b></a></li>
+            <li><a th:href="@{/registrationPage}" class = "accountLink"><b>Create an Account</b></a></li>
         </ul>
     </div>
 </nav>
@@ -237,15 +237,15 @@ border-top: 2px solid #D768C3;
         <nav id="spy">
             <ul class="sidebar-nav nav">
                 <li class="sidebar-brand">
-                    <a href="#home"><span class="fa fa-home solo">MY ACCOUNT</span></a>
+                    <a th:href="@{/accountPage}"><span class="fa fa-home solo">MY ACCOUNT</span></a>
                 </li>
                 <li>
-                    <a href="#anch1" data-scroll>
+                    <a th:href="@{/myOrdersPage}" data-scroll>
                         <span class="fa fa-anchor solo">MY ORDERS</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#anch1" data-scroll>
+                    <a th:href="@{'/logout'}" data-scroll>
                         <span class="fa fa-anchor solo">LOGOUT</span>
                     </a>
                 </li>

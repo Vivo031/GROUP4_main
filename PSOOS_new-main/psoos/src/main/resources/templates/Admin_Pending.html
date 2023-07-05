@@ -250,7 +250,7 @@ border-top: 2px solid #D768C3;
                     </a>
                 </li>
                 <li>
-                    <a href="#anch1" data-scroll>
+                    <a th:href="@{'/logout'}" data-scroll>
                         <span class="fa fa-anchor solo">LOGOUT</span>
                     </a>
                 </li>
@@ -283,92 +283,121 @@ border-top: 2px solid #D768C3;
                         </thead>
                         <tbody>
                         <tr th:each = "order : ${orders}">
-                            <th th:text = "${order.joId}"></th>
-                            <th th:text = "${order.status}"></th>
-                            <th>
-                                <a class = "btn btn-success" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${order.joId}">View More Details</a>
-                                <a class = "btn btn-primary" th:href="@{'/order/DONE/' + ${order.joId}}">Done</a>
-                                <!--                <a class = "btn btn-danger" th:href="@{'/order/DECLINED/' + ${order.joId}}">Decline</a>-->
-
-                                <div class="modal modal-warning fade in" th:id="modal-warning+${order.joId }" >
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">×</span></button>
-                                                <h5 class="modal-title">Job Order Contents</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <h3>Details Contents</h3>
-                                                <div class = "row">
-                                                    <div class = "col-md-4">
-                                                        <table class="table table-condensed">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>No of Pages</th>
-                                                                <th>Paper Size</th>
-                                                                <th>Print Type</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr th:each = "ord : ${order.documentDTOS}">
-                                                                <div th:if = "${order.joId} == ${ord.jobOrder}">
-                                                                    <th th:text = "${ord.orderType}"></th>
-                                                                    <th th:text = "${ord.noOfPages}"></th>
-                                                                    <th th:text = "${ord.paperSize}"></th>
-                                                                    <th th:text = "${ord.printType}"></th>
-                                                                </div>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class = "col-md-4">
-                                                        <table class="table table-condensed">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>MugColor</th>
-                                                                <th>No. of Mugs</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr th:each = "ord : ${order.mugDTOS}">
-                                                                <div th:if = "${order.joId} == ${ord.jobOrder}">
-                                                                    <th th:text = "${ord.mugColor}"></th>
-                                                                    <th th:text = "${ord.noOfMug}"></th>
-                                                                </div>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class = "col-md-4">
-                                                        <table class="table table-condensed">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>Shirt Size</th>
-                                                                <th>Print Type</th>
-                                                                <th>No. of Shirts</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr th:each = "ord : ${order.shirtDTOS}">
-                                                                <div th:if = "${order.joId} == ${ord.jobOrder}">
-                                                                    <th th:text = "${ord.shirtSize}"></th>
-                                                                    <th th:text = "${ord.printType}"></th>
-                                                                    <th th:text = "${ord.noOfShirt}"></th>
-                                                                </div>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
+                            <form class = "form " action="" th:action = "@{/order/__${order.joId}__}" method = "post" enctype="multipart/form-data">
+                                <th th:text = "${order.joId}"></th>
+                                <th th:text = "${order.status}"></th>
+                                <th>
+                                    <a class = "btn btn-success" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${order.joId}">View More Details</a>
+                                    <!--                <a class = "btn btn-primary" th:href="@{'/order/DONE/' + ${order.joId}}">Done</a>-->
+                                    <a class = "btn btn-success" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning-worker'+${order.joId}">Change Status</a>
+                                    <div class="modal modal-warning fade in" th:id="modal-warning+${order.joId }" >
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span></button>
+                                                    <h5 class="modal-title">Job Order Contents</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h3>Details Contents</h3>
+                                                    <div class = "row">
+                                                        <div class = "col-md-4">
+                                                            <table class="table table-condensed">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>No of Pages</th>
+                                                                    <th>Paper Size</th>
+                                                                    <th>Print Type</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr th:each = "ord : ${order.documentDTOS}">
+                                                                    <div th:if = "${order.joId} == ${ord.jobOrder}">
+                                                                        <th th:text = "${ord.orderType}"></th>
+                                                                        <th th:text = "${ord.noOfPages}"></th>
+                                                                        <th th:text = "${ord.paperSize}"></th>
+                                                                        <th th:text = "${ord.printType}"></th>
+                                                                    </div>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class = "col-md-4">
+                                                            <table class="table table-condensed">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>MugColor</th>
+                                                                    <th>No. of Mugs</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr th:each = "ord : ${order.mugDTOS}">
+                                                                    <div th:if = "${order.joId} == ${ord.jobOrder}">
+                                                                        <th th:text = "${ord.mugColor}"></th>
+                                                                        <th th:text = "${ord.noOfMug}"></th>
+                                                                    </div>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class = "col-md-4">
+                                                            <table class="table table-condensed">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>Shirt Size</th>
+                                                                    <th>Print Type</th>
+                                                                    <th>No. of Shirts</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr th:each = "ord : ${order.shirtDTOS}">
+                                                                    <div th:if = "${order.joId} == ${ord.jobOrder}">
+                                                                        <th th:text = "${ord.shirtSize}"></th>
+                                                                        <th th:text = "${ord.printType}"></th>
+                                                                        <th th:text = "${ord.noOfShirt}"></th>
+                                                                    </div>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </th>
+                                    <div id="myModal" class="modal fade" role="dialog" th:id="modal-warning-worker+${order.joId }">
+
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Action & Status</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Job Progess</p>
+                                                <select  class="form-control" id="color" th:name = "orderStatus">
+                                                    <option value = "ACCEPTED">Order Accepted</option>
+                                                    <option value = "IN-PROGRESS">On Process</option>
+                                                    <option value = "COMPLETED">Completed</option>
+                                                    <option value = "FOR-PICKUP">For Pickup</option>
+                                                </select>
+                                                <div class="form-group">
+                                                    <label for="comment">Notes:</label>
+                                                    <textarea class="form-control" rows="5" id="comment" th:name = "workerNotes" th:text = "${order.workerNotes }"th:value = "${order.workerNotes }"></textarea>
+                                                    <input  th:name = "joId" th:value = "${order.joId }" hidden/>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <input type = "submit" placeholder = "Submit Order" class = "btn btn-primary" />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </th>
+                            </form>
                         </tr>
                         </tbody>
                     </table>

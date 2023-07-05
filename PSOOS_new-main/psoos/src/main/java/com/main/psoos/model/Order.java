@@ -1,13 +1,21 @@
 package com.main.psoos.model;
 
 import com.main.psoos.dto.OrderDTO;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.CurrentTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -49,6 +57,16 @@ public class Order {
     @Column(name = "barcode")
     byte[] barcode;
 
+    @Column(name = "order_status")
+    String orderStatus;
+    @Column(name = "worker")
+    String worker;
+    @Column(name = "worker_notes")
+    String workerNotes;
+    @Column(name = "expected_finish_date")
+    private String finishDate;
+
+
     public Order(OrderDTO order){
         //this.id = order.getOrderId();
         this.customerId = order.getCustomerId();
@@ -56,5 +74,9 @@ public class Order {
         this.status = order.getStatus();
         this.totalPrice = order.getTotalPrice();
         this.barcode = order.getBarcode();
+        this.worker = order.getWorker();
+        this.workerNotes = order.getWorkerNotes();
+        this.orderStatus = order.getOrderStatus();
+        this.finishDate = (order.getFinishDate() == null) ? "" : order.getFinishDate().toString();
     }
 }

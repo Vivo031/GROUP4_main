@@ -26,6 +26,7 @@ public class ShirtDTO {
     Integer price;
     String fileType;
     String customizationType;
+    String shirtNotes;
 
     public ShirtDTO(Shirt shirt) {
         this.shirtSize = shirt.getShirtSize();
@@ -34,5 +35,6 @@ public class ShirtDTO {
         this.noOfShirt = shirt.getNoOfShirt();
         this.fileType = shirt.getFileType();
         this.price = shirt.getPrice();
+        this.shirtNotes = shirt.getShirtNotes();
     }
 }

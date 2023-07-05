@@ -44,6 +44,8 @@ public class Shirt {
 
     @Column(name = "price")
     private Integer price;
+    @Column(name = "shirt_notes")
+    private String shirtNotes;
 
     public Shirt(ShirtDTO shirt){
         this.shirtSize = shirt.getShirtSize();
@@ -51,5 +53,6 @@ public class Shirt {
         this.printType = shirt.getPrintType();
         this.noOfShirt = shirt.getNoOfShirt();
         this.fileType = shirt.getFileType();
+        this.shirtNotes = shirt.getShirtNotes();
     }
 }

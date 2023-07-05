@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="en"  xmlns:th = "http://thymeleaf.org">
+<html lang="en" xmlns:th = "http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>UpLoad Document</title>
+    <title>Upload Document</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- Optional theme -->
-    <style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<style>
   .accountLink {
     color: #D768C3 !important;
   }
@@ -30,112 +33,66 @@
         display:block !important;
   }
 
-  .form{
-   position: absolute;
-   border-top: 2px solid #D768C3;
-   border-left: 2px solid #D768C3;
-   border-bottom: 2px solid #28B6CF;
-   border-right: 2px solid #28B6CF;
-   padding-bottom: 10px;
-   padding-left: 10px;
-   padding-right: 10px;
-  }
+
 
    body{
     background-image: url("img/background.jpg");
 
+   }
+
+
+.submitBtn {
+    border: 2px solid #D768C3;
+
+    background-color:transparent;
 }
 
+.submitBtn:hover {
+  border:2px solid  #28B6CF;
+
+  background-color:transparent;
+}
 .thumbnail{
 border-top: 2px solid #D768C3;
    border-left: 2px solid #D768C3;
    border-bottom: 2px solid #28B6CF;
    border-right: 2px solid #28B6CF;
 }
-
-select {
-padding: 8px;
-color: black;
-font-size: 15px;
-border: 0 !important;
-background-color: #FFFFF0;
-position: relative;
-opacity: 50;
+.btn span.glyphicon {
+	opacity: 0;
 }
-
-select {
-position: relative;
-display: flex;
-width: 15em;
-line-height: 10em;
+.btn.active span.glyphicon {
+	opacity: 1;
 }
-
-.detailsDropdown, select:hover {
-	background-color: #FFFFF0;
-	outline: none;
-	width: 15em;
-}
-
-.btn{
-padding: 8px;
-font-size: 15px;
-margin: 3px;
-background: #EBEBD2;
-color: black;
-border: none;
-outline: none;
-cursor: pointer;
-position: relative;
-}
-
-.active, .btn:hover {
-  background-color: #AFE1AF;
-  color: white;
-}
-
 </style>
-    <script>
-
-var header = document.getElementById("myDIV");
-var btns = header.getElementsByClassName("btn");
-for (var i = 0; i < btns.length; i++) {
-  btns[i].addEventListener("click", function() {
-  var current = document.getElementsByClassName("active");
-  current[0].className = current[0].className.replace(" active", "");
-  this.className += " active";
-  });
-}
-
-function myFunction() {
-confirm("Do you wish to proceed?");
-}
-</script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-</head>
 <body>
 <nav class="navbar">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#"><img src = "../img/logo1.jpg" width="150px" height="150px"></a>
+            <a class="navbar-brand" href="#"><img src = "img/logo.jpg" width="75px" height="75px"></a>
         </div>
+        <ul class="nav navbar-nav">
+            <!--      <li class="active"><a href="#">Home</a></li>-->
+            <!--      <li><a href="#">Page 1</a></li>-->
+            <!--      <li><a href="#">Page 2</a></li>-->
+        </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a th:href="@{/loginPage}"><b>Home</b></a></li>
+            <li><a href="index.html"><b>Home</b></a></li>
             <li><a href="#"><b>About</b></a></li>
-            <li><a th:href="@{/account}" class = "accountLink"><b>My Account</b></a></li>
+            <li><a href="createAccount.html" class = "accountLink"><b>My Account</b></a></li>
         </ul>
     </div>
 </nav>
+<!--br -> break line -->
 <br>
 <br>
 <br>
 <div class = "logInDiv text-center container-fluid">
-       <div class = "row">
-        <div class = "col-lg-6">
-            <img src="/img/document.jpg" alt="Lights" style="width:50%">
+    <div class = "row">
+        <div class = "col-md-6">
+            <!-- Picture -->
         </div>
-
-        <div class = "col-lg-6">
+        <div class = "col-md-6">
             <form class = "form " action="" th:action = "@{/addDocument}" method = "post" enctype="multipart/form-data">
                 <h1>DOCUMENT</h1>
                 <div class="mb-3">
@@ -240,8 +197,38 @@ confirm("Do you wish to proceed?");
             </form>
         </div>
 
-       </div>
+    </div>
 </div>
+
+<!--              <input type="radio" name="options" id="option1" autocomplete="off" chacked>-->
+<!--              <span class="glyphicon glyphicon-ok"></span>-->
+<!--            </label>-->
+
+<!--            <label class="btn btn-dark">-->
+<!--              <input type="radio" name="options" id="option2" autocomplete="off">-->
+<!--              <span class="glyphicon glyphicon-ok"></span>-->
+<!--            </label>-->
+
+<!--            <label class="btn btn-info">-->
+<!--              <input type="radio" name="options" id="option3" autocomplete="off">-->
+<!--              <span class="glyphicon glyphicon-ok"></span>-->
+<!--            </label>-->
+
+<!--            <label class="btn btn-default">-->
+<!--              <input type="radio" name="options" id="option4" autocomplete="off">-->
+<!--              <span class="glyphicon glyphicon-ok"></span>-->
+<!--            </label>-->
+
+<!--            <label class="btn btn-warning">-->
+<!--              <input type="radio" name="options" id="option5" autocomplete="off">-->
+<!--              <span class="glyphicon glyphicon-ok"></span>-->
+<!--            </label>-->
+
+<!--            <label class="btn btn-danger">-->
+<!--              <input type="radio" name="options" id="option6" placeholder = "click me!" autocomplete="off">-->
+<!--              <span class="glyphicon glyphicon-ok"></span>-->
+<!--            </label>-->
+<!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 </html>
