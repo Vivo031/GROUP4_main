@@ -237,22 +237,7 @@ border-top: 2px solid #D768C3;
     <nav id="spy">
       <ul class="sidebar-nav nav">
         <li class="sidebar-brand">
-          <a th:href = "@{'/adminPage'}"><span class="fa fa-home solo">NEW</span></a>
-        </li>
-        <li>
-          <a th:href="@{'/adminPendingOrdersPage'}" data-scroll>
-            <span class="fa fa-anchor solo">PENDING</span>
-          </a>
-        </li>
-        <li>
-          <a th:href="@{'/adminCompletedOrdersPage'}" data-scroll>
-            <span class="fa fa-anchor solo">COMPLETED</span>
-          </a>
-        </li>
-        <li>
-          <a th:href="@{'/adminManageAccounts'}" data-scroll>
-            <span class="fa fa-anchor solo">MANAGE ACCOUNTS</span>
-          </a>
+          <a th:href = "@{'/adminPage'}"><span class="fa fa-home solo">HOME</span></a>
         </li>
         <li>
           <a th:href="@{'/logout'}" data-scroll>
@@ -263,8 +248,6 @@ border-top: 2px solid #D768C3;
       </ul>
     </nav>
   </div>
-
-  <!-- Page content -->
   <div id="page-content-wrapper">
     <div class="content-header">
       <h1 id="home">

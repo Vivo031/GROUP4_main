@@ -71,6 +71,7 @@ border-top: 2px solid #D768C3;
 #wrapper {
   padding-left: 250px;
   transition: all 0.4s ease 0s;
+  max-width: 100%;
 }
 
 #sidebar-wrapper {
@@ -96,9 +97,6 @@ border-top: 2px solid #D768C3;
 #page-content-wrapper {
   width: 100%;
 }
-
-
-
 .sidebar-nav {
   position: absolute;
   top: 0;
@@ -219,14 +217,11 @@ border-top: 2px solid #D768C3;
             <a class="navbar-brand" href="#"><img src = "img/logo.jpg" width="75px" height="75px"></a>
         </div>
         <ul class="nav navbar-nav">
-            <!--      <li class="active"><a href="#">Home</a></li>-->
-            <!--      <li><a href="#">Page 1</a></li>-->
-            <!--      <li><a href="#">Page 2</a></li>-->
+
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="index.html"><b>Home</b></a></li>
+            <li><a th:href="@{/loginPage}"><b>Home</b></a></li>
             <li><a href="#"><b>About</b></a></li>
-            <li><a href="createAccount.html" class = "accountLink"><b>My Account</b></a></li>
         </ul>
     </div>
 </nav>
@@ -241,10 +236,10 @@ border-top: 2px solid #D768C3;
             <ul class="sidebar-nav nav">
                 <div th:if = "${role} == 'USER_ADMIN'">
                     <li class="sidebar-brand">
-                        <a th:href = "@{'/adminPage'}"><span class="fa fa-home solo">NEW</span></a>
+                        <a th:href = "@{'/adminPage'}"><span class="fa fa-home solo">HOME</span></a>
                     </li>
                 </div>
-                <div th:if = "${role} == 'USER_WORKER'">
+                <div>
                     <li>
                         <a th:href="@{'/adminPendingOrdersPage'}" data-scroll>
                             <span class="fa fa-anchor solo">PENDING</span>
@@ -343,7 +338,7 @@ border-top: 2px solid #D768C3;
                                 <!--                                        <option th:each=" worker : ${workers}" th:value = "${worker}" th:text = "${worker}"></option>-->
                                 <!--                                    </select>-->
                                 <!--                                </div>-->
-                                <!--                            <a class = "btn btn-danger" id = "declineOrder" th:href="@{'/order/DECLINED/' + ${order.joId}}">Decline</a>-->
+                                <a class = "btn btn-danger" id = "declineOrder" th:href="@{'/order/DECLINED/' + ${order.joId}}">Decline</a>
                                 <div class="modal modal-warning fade in" th:id="modal-warning+${order.joId }" >
                                     <div class="modal-dialog">
                                         <div class="modal-content">

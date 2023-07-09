@@ -79,6 +79,8 @@ public class LoginController {
     private Customer loggedCustomer = new Customer();
     private User loggedUser = new User();
     private Map<String, Object> model = new HashMap<>();
+    List<ToBeSubmitOrders> toBeSubmitOrders = new ArrayList<>();
+
 
     private final String SHIRT_DESIGN_PATH = "C:\\Users\\alyssa\\OneDrive\\ARBEN\\PBDIT\\GROUP 4\\OOAD\\GROUP4_main\\PSOOS_new-main\\psoos\\src\\main\\resources\\static\\img\\T-Shirt Designs\\";
     private final String MUG_DESIGN_PATH = "C:\\Users\\alyssa\\OneDrive\\ARBEN\\PBDIT\\GROUP 4\\OOAD\\GROUP4_main\\PSOOS_new-main\\psoos\\src\\main\\resources\\static\\img\\Mugs Designs\\";
@@ -91,7 +93,7 @@ public class LoginController {
 
     @GetMapping("/accountPage")
     public String accountPage(Model model, User user){
-        Customer customer = customerService.getCustomerByName(user.getName());
+        Customer customer = (customerService.getCustomerByName(user.getName()) != null)? customerService.getCustomerByName(user.getName()) : loggedCustomer;
         model.addAttribute("name", user.getName());
         model.addAttribute("customer", customer);
         model.addAttribute("password", user.getPassword());
@@ -225,7 +227,7 @@ public class LoginController {
         if(orders.isEmpty()) {
             orderService.getAllOrders().
                     stream().
-                    filter(order -> order.getStatus().equals("COMPLETED") || order.getStatus().equals("DECLINED") || order.getStatus().equals("DONE")).
+                    filter(order -> order.getStatus().equals("COMPLETED")).
                     forEach(tempOrder -> {
                         OrderDTO orderDTO = new OrderDTO(tempOrder);
                         orderDTO.setMugDTOS(mugService.getMugDTOByJoId(orderDTO.getJoId()));
@@ -441,10 +443,11 @@ public class LoginController {
         return "tshirt_preDesign";
     }
 
+
     @PostMapping("/addDocument")
     public String addDocument(DocumentDTO tempDocument, Model model) throws IOException {
-
         addDocumentOrder(tempDocument);
+
         model.addAttribute("orders", documentOrders);
         model.addAttribute("mugOrders", mugOrders);
         model.addAttribute("shirtOrders", shirtOrders);
@@ -455,7 +458,9 @@ public class LoginController {
                 mugOrders);
 
         model.addAttribute("totalPrice", totalPrice);
-
+        ToBeSubmitOrders toAdd = new ToBeSubmitOrders(tempDocument.getOrderType(), tempDocument.getNoOfPages(), "PENDING");
+        toBeSubmitOrders.add(toAdd);
+        model.addAttribute("ordersToBeSubmitted", toAdd);
         return "checkout_page";
     }
 
@@ -470,8 +475,10 @@ public class LoginController {
                 shirtOrders,
                 documentOrders,
                 mugOrders);
-        System.out.println(totalPrice + "HOHO");
         model.addAttribute("totalPrice", totalPrice);
+        ToBeSubmitOrders toAdd = new ToBeSubmitOrders(mugDTO.getOrderType(), mugDTO.getNoOfMug(), "PENDING");
+        toBeSubmitOrders.add(toAdd);
+        model.addAttribute("ordersToBeSubmitted", toAdd);
         return "checkout_page";
     }
 
@@ -485,8 +492,11 @@ public class LoginController {
                 shirtOrders,
                 documentOrders,
                 mugOrders);
-        System.out.println(totalPrice + "HOHO");
+
         model.addAttribute("totalPrice", totalPrice);
+        ToBeSubmitOrders toAdd = new ToBeSubmitOrders(shirtDTO.getOrderType(), shirtDTO.getNoOfShirt(), "PENDING");
+        toBeSubmitOrders.add(toAdd);
+        model.addAttribute("ordersToBeSubmitted", toAdd);
         return "checkout_page";
     }
 
@@ -1004,7 +1014,7 @@ public class LoginController {
     public String deleteMugDesign(@PathVariable("id") Integer id, Model model) throws IOException {
         mugDesignService.deleteDesignById(id);
 
-        return adminUploadShirtDesign(model);
+        return adminUploadMugDesign(model);
     }
     @PostMapping("export-csv")
     public void exportCSV(ReportsDTO reportsDTO, HttpServletResponse response) throws IOException {

@@ -32,23 +32,15 @@
         margin: 0 auto !important;
         display:block !important;
   }
-
-
    body{
     background-image: url("img/background.jpg");
-
    }
-
-
 .submitBtn {
     border: 2px solid #D768C3;
-
     background-color:transparent;
 }
-
 .submitBtn:hover {
   border:2px solid  #28B6CF;
-
   background-color:transparent;
 }
 .thumbnail{
@@ -60,6 +52,30 @@ border-top: 2px solid #D768C3;
 .border-highlight {
     border:5px dashed red;
 }
+
+.logInDiv{
+    background-color:transparent;
+    float: center;
+    width:90%;
+    padding: 10px;
+    height: 550px;
+    padding-top: 50px;
+}
+.container {
+    margin-left: 235px;
+}
+.form{
+   background-color: #F4F3F3;
+   border-top: 2px solid #D768C3;
+   border-left: 2px solid #D768C3;
+   border-bottom: 2px solid #28B6CF;
+   border-right: 2px solid #28B6CF;
+   padding-top: 50px;
+   padding-bottom: 5px;
+   margin-left: 50px;
+   height: 450px;
+   width: 90%;
+}
 </style>
 <body>
 <nav class="navbar">
@@ -70,7 +86,6 @@ border-top: 2px solid #D768C3;
     <ul class="nav navbar-nav navbar-right">
       <li><a th:href="@{/loginPage}"><b>Home</b></a></li>
       <li><a href="#"><b>About</b></a></li>
-      <li><a th:href="@{/account}" class = "accountLink"><b>My Account</b></a></li>
     </ul>
   </div>
 </nav>
@@ -78,108 +93,97 @@ border-top: 2px solid #D768C3;
 <br>
 <br>
 <div class = "logInDiv text-center container-fluid">
-  <br>
-  <br>
-  <form class = "form " action="" th:action = "@{/addMug}" method = "post" enctype="multipart/form-data">
-    <div class="row">
-      <div class="col-md-6">
-        <div class="thumbnail">
-          <a href="">
-            <img src="/img/mug.jpg" alt="Lights" style="width:40%">
-            <div class="caption">
-              <h2>Design Preview</h2>
-            </div>
-          </a>
-        </div>
-      </div>
-      <div class = "col-md-6">
-        <br>
-        <h1>MUG</h1>
-        Customize
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <select  class="form-control btn btn-outline-primary" id = "customizeOption" th:name = "printType" onchange="toggleCustomize(this)">
-            <option value = "yes">YES</option>
-            <option value = "no">NO</option>
-          </select>
-        </div>
-        <br>
-        <div class="mb-3">
-          <!--                <input class="form-control" type="file" id="formFile" th:name = "file">-->
-        </div>
-        <br>
-
-        <div class = "row">
-          <div class = "col-md-6">
-            <h5><b>Color</b></h5>
-          </div>
-          <div class = "col-md-6">
-            <select  class="form-control" id="color" th:name = "mugColor">
-              <option>Black</option>
-              <option>White</option>
-              <option>Red</option>
-              <option>Custom</option>
+  <h1>MUG</h1>
+  <div class = "row">
+  <div class="col-md-6">
+    <div class="thumbnail">
+        <img src="/img/mug.jpg" alt="Lights" style="width:48%">
+    </div>
+  </div>
+  <div class="col-md-6">
+    <form class = "form" action="" th:action = "@{/addMug}" method = "post" enctype="multipart/form-data">
+      <div class = "row centered">
+        <div class="form-group col-xs-12">
+          Customize
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <select  class="form-control btn btn-outline-primary" id = "customizeOption" th:name = "printType" onchange="toggleCustomize(this)">
+              <option value = "yes">YES</option>
+              <option value = "no">NO</option>
             </select>
           </div>
-
         </div>
-        <div class = "row">
-          <br>
-          <div class = "col-md-6">
-            <h5><b>No. of mugs</b></h5>
-            <br>
-            <br>
-            <br>
-          </div>
-          <div class = "col-md-6">
-            <input type = "number" id = "mugs" th:name = "noOfMug" value = "1" onchange="calculate()">
-          </div>
-        </div>
-        <div class = "row">
-          <div class = "col-md-6">
-            <h5><b>Notes</b></h5>
-          </div>
-          <div class = "col-md-6">
-            <textarea id = "shirtNotes" th:name = "mugNotes" placeholder = "Add Notes here"></textarea>
-          </div>
-        </div>
-
       </div>
-      <div class = "row">
-        <div class = "col-md-6">
-          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">View Customizations</button>
+      <div class = "row centered">
+        <div class="form-group col-xs-12">
+          <b>Color</b>
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <select  class="form-control" id="color" th:name = "mugColor">
+            <option>Black</option>
+            <option>White</option>
+            <option>Red</option>
+            <option>Custom</option>
+          </select>
+          </div>
+        </div>
+      </div>
+      <div class = "row centered">
+        <div class="form-group col-xs-12">
+          <b>No. of mugs</b>
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <input type = "number" id = "mugs" th:name = "noOfMug" value = "1" onchange="calculate()">
+          </div>
+        </div>
+      </div>
+      <div class = "row centered">
+        <div class="form-group col-xs-12">
+          <b>Notes</b>
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <textarea id = "shirtNotes" th:name = "mugNotes" placeholder = "Add Notes here"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class = "row centered">
+        <div class="form-group col-xs-12">
+          <b>Customized</b>
+          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">View Design</button>
           <input type="hidden" name="customizationType" th:name = "customizationType">
-          <div id="myModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-              <!-- Modal content-->
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title">Customizations</h4>
-                </div>
-                <div class="modal-body">
-                  <div id="thumbs">
-                    <div class = "row">
-                      <div  th:each = "design : ${designs}">
-                        <div class = "col-md-4">
-                          <img th:src = "${design.path}" th:id = "imgContainer" height = "100px" width = "100px" src=""/>
-                        </div>
-                      </div>
+        </div>
+      </div>
+      <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">DESIGNS</h4>
+            </div>
+            <div class="modal-body">
+              <div id="thumbs">
+                <div class = "row">
+                  <div  th:each = "design : ${designs}">
+                    <div class = "col-md-4">
+                      <img th:src = "${design.path}" th:id = "imgContainer" height = "100px" width = "100px" src=""/>
                     </div>
                   </div>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
               </div>
-
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
-          <h5><b>Total Price</b></h5>
+        </div>
+      </div>
+      <div class = "row centered">
+        <div class="form-group col-xs-12">
+          <b>Total Price</b>
           <input type = "number" id = "price" th:name = "price" readonly>
         </div>
       </div>
-    </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</div>
+</div>
     <script type="text/javascript">
           function calculate(){
             var mugs = document.getElementById('mugs').value;
@@ -204,7 +208,6 @@ border-top: 2px solid #D768C3;
                   calculate();
                 }
                 console.log(value);
-
               }
                $('#thumbs').delegate('img', 'click', function() {
                     var $this = $(this);
@@ -213,17 +216,8 @@ border-top: 2px solid #D768C3;
                     $this.addClass('border-highlight');
 
                    $('[name="customizationType"]').val( $this.prop('src'));
-
                 });
-
         </script>
-
-    <input type = "submit" placeholder = "Submit Order" class = "btn btn-primary" />
-  </form>
-</div>
-</div>
-</div>
-</div>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
